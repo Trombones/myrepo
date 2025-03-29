@@ -2,9 +2,7 @@
 title: "Portfolio of a Found Trombone"
 author: "Thomas Robinson"
 date: "2025-03-29"
-output: html_document
-flexdashboard::flex_dashboard:
-    storyboard: true
+output: flexdashboard::flex_dashboard
 ---
 
 ```{r setup, include=FALSE}
@@ -17,10 +15,13 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-### Frame 1
+### Frame 1 {data-commentary-width=400}
 
 ```{r}
 ```
+***
+Hello there
+
 
 ### Frame 2
 
