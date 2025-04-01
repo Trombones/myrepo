@@ -2,35 +2,198 @@
 title: "Portfolio of a Found Trombone"
 author: "Thomas Robinson"
 date: "2025-03-29"
-output: flexdashboard::flex_dashboard
+output: 
+  flexdashboard::flex_dashboard:
+    theme: flatly
+    orientation: columns
+    vertical_layout: fill
 ---
-
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(ggplot2)
+library(dplyr)
+library(rjson)
+source("compmus.R")
 ```
 
-## R Markdown
+# Background
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Empty {data-width="100"}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Column {data-width="800"}
 
-### Frame 1 {data-commentary-width=400}
+### Background
+
+For this portfolio I have submitted two of my own compositions: Waterloo (Track #1) and Belfast (Track #2). I submitted these two compositions for a few reasons. Firstly, they both have vocals, and as a linguistics student, I am interested in any conclusions I can make about the vocal aspect of these tracks. I also find these two tracks to be fairly distinct. Waterloo includes synth sounds but also features acoustic sounding drums, a B3 organ, and a Wurlitzer keyboard. Belfast, on the other hand, is more electronic, being very synth heavy, with electronic sounding drums, as well as a fasterer overall tempo. 
+
+I composed these two tracks in similar ways. For waterloo, I started with the synth riff featured in the beginning. From there, I added drums to create a syncopated groove. I then finished the A section by adding a vocal melody. The B section came naturally to me, as the lower energy A section called for an energetic and climactic B section. For the A2 section, I decided to bring down the energy a bit and only feature synth piano instead of vocals. The track then ends with a B2 section identical to B1 and an outro section.
+
+For Belfast, I started with a synth chord sequence with a voice leading that I found particularly satisfying. I arpeggiated the synth and added drums to create a very high energy, albeit short, section. The intro actually actually came to me last, and features only piano and voice. This composition is admittedly underdeveloped, but I decided to use it for its high level of idiosyncracy.
+
+
+
+## Empty {data-width="100"}
+
+
+
+# Chromagrams {#Chromagrams data-navmenu="Tonal Structure"}
+
+## Graph {data-width="700"}
+```{r}
+file.exists("compmus.R")
+
+song_data <- read.csv("compmus2025.csv")
+
+"features/thomas-r-1.json" |>                           # Change the track
+  compmus_chroma(norm = "euclidean") |>                 # Change the norm
+  ggplot(aes(x = time, y = pc, fill = value)) + 
+  geom_raster() +
+  scale_y_continuous(
+    breaks = 0:11,
+    minor_breaks = NULL,
+    labels = c(
+                "C", "C#|Db", "D", "D#|Eb",
+                "E", "F", "F#|Gb", "G",
+                "G#|Ab", "A", "A#|Bb", "B"
+              )
+  ) +
+  scale_fill_viridis_c(guide = "none") +               # Change the colours?
+  labs(x = "Time (s)", y = NULL, fill = NULL) +
+  theme_classic()                           
+```
+
+## Graph {data-width="700"}
+```{r}
+file.exists("compmus.R")
+
+song_data <- read.csv("compmus2025.csv")
+
+"features/thomas-r-2.json" |>                           # Change the track
+  compmus_chroma(norm = "euclidean") |>                 # Change the norm
+  ggplot(aes(x = time, y = pc, fill = value)) + 
+  geom_raster() +
+  scale_y_continuous(
+    breaks = 0:11,
+    minor_breaks = NULL,
+    labels = c(
+                "C", "C#|Db", "D", "D#|Eb",
+                "E", "F", "F#|Gb", "G",
+                "G#|Ab", "A", "A#|Bb", "B"
+              )
+  ) +
+  scale_fill_viridis_c(guide = "none") +               # Change the colours?
+  labs(x = "Time (s)", y = NULL, fill = NULL) +
+  theme_classic()                           
+```
 
 ```{r}
 ```
-***
-Hello there what
+## Text {data-width="700"}
+### Analysis
+
+Waterloo (left) has a more structured, repetitive harmonic pattern, while Belfast (right) has more variations and dynamic tonal shifts. Waterloo seems to be in the key of B major, while Belfast seems to be in C minor, though Belfast's key is a bit more ambiguous. Additionally, Waterloo's song structure is more visible in its chromogram, where the B sections are clearly visible. In Belfast's, though the track features two very distinct sections, it doesn't seem to show much if any shift in song structure.
 
 
-### Frame 2
 
+
+# SSMs {#SSMs data-navmenu="Tonal Structure"}
+
+## Graph {data-width="700"}
 ```{r}
+"features/thomas-r-1.json" |>                           # Change the track
+  compmus_mfccs(norm = "identity") |>                  # Change the norm
+  compmus_self_similarity(
+    feature = mfcc,
+    distance = "euclidean"                             # Change the distance
+  ) |>   
+  ggplot(aes(x = xtime, y = ytime, fill = d)) + 
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +               # Change the colours?
+  labs(x = "Time (s)", y = NULL, fill = NULL) +
+  theme_classic()  
 ```
 
-### Frame 3
-
 ```{r}
+"features/thomas-r-2.json" |>                           # Change the track
+  compmus_mfccs(norm = "identity") |>                  # Change the norm
+  compmus_self_similarity(
+    feature = mfcc,
+    distance = "euclidean"                             # Change the distance
+  ) |>   
+  ggplot(aes(x = xtime, y = ytime, fill = d)) + 
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +               # Change the colours?
+  labs(x = "Time (s)", y = NULL, fill = NULL) +
+  theme_classic()  
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+"features/thomas-r-1.json" |>                           # Change the track
+  compmus_chroma(norm = "identity") |>                 # Change the norm
+  compmus_self_similarity(
+    feature = pc,
+    distance = "euclidean"                             # Change the distance
+  ) |>   
+  ggplot(aes(x = xtime, y = ytime, fill = d)) + 
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +               # Change the colours?
+  labs(x = "Time (s)", y = NULL, fill = NULL) +
+  theme_classic()  
+```
+
+```{r}
+"features/thomas-r-2.json" |>                           # Change the track
+  compmus_chroma(norm = "identity") |>                 # Change the norm
+  compmus_self_similarity(
+    feature = pc,
+    distance = "euclidean"                             # Change the distance
+  ) |>   
+  ggplot(aes(x = xtime, y = ytime, fill = d)) + 
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +               # Change the colours?
+  labs(x = "Time (s)", y = NULL, fill = NULL) +
+  theme_classic()  
+```
+
+
+## Text {data-width="700"}
+### Analysis
+The timbre-based self-similarity matrices (upper) provide a much clearer picture of the structure of the tracks than the chroma-based self-similarity matrices (lower). Take a look at The Belfast's SSMs, for example. In the timbre-based SSM, at around the 60 second mark, we see a dramatic change in the graph. This is likely because the beginning of Belfast features only voice and piano, and then switches to a sawtooth arpeggiated synth sound, which contrasts significantly with the timbre of voice and piano. That being said, the pitch the chroma-based SSNs do not seem to capture this change in dramatic change in song structure. For Waterloo, (#1 & #3), the timbre-based SSN still seems to better capture the structure of the song better than the chromma based SSN, despite the overall timbre in Waterloo being more regular than in Belfast.
+
+
+
+
+# Tempograms {#Tempograms data-navmenu="Rhythmic Structure"}
+
+## Graph {data-width="700"}
+```{r}
+"features/thomas-r-1.json" |>
+  compmus_tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) |>
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+
+```
+
+```{r}
+"features/thomas-r-2.json" |>
+  compmus_tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) |>
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+```
+
+
+
+## Text {data-width="300"}
+
+### Analysis
+The tempogram for Waterloo (upper) shows an unchanging BPM of about 83. Belfast's tempogram is a little less clear. The B section in Belfast does display a constant tempo of around 160 BPM, but the A section's rhythmic structure doesn't seem to be well captured by this tempogram. This could be because of the irregular groove of the drums and piano together. Once the B section kicks in around the 60 second mark, there is a steady kick drum that the tempogram is clearly happier about.
+
+## Empty {data-width="100"}
