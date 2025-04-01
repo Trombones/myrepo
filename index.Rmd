@@ -1,7 +1,6 @@
 ---
 title: "Portfolio of a Found Trombone"
 author: "Thomas Robinson"
-date: "2025-03-29"
 output: 
   flexdashboard::flex_dashboard:
     theme: flatly
